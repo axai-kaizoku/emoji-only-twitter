@@ -1,18 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "@/trpc/react";
+import { useUser } from "@clerk/nextjs";
 
 export function CreatePost() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [content, setContent] = useState<string>("");
+
+  const user = useUser();
+
+  useEffect(() => {
+    console.log(user.user);
+  }, [user]);
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
       router.refresh();
-      setName("");
+      setContent("");
     },
   });
 
@@ -20,23 +27,23 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        createPost.mutate({ content });
       }}
-      className="flex flex-col gap-2"
+      className="flex w-full gap-2 border-b"
     >
       <input
         type="text"
-        placeholder="Title"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-full px-4 py-2 text-black"
+        placeholder="Content"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full px-4 py-2 outline-none"
       />
       <button
         type="submit"
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20"
+        className="h-16 w-16 rounded-full "
         disabled={createPost.isPending}
       >
-        {createPost.isPending ? "Submitting..." : "Submit"}
+        {createPost.isPending ? "🔃" : "💸"}
       </button>
     </form>
   );

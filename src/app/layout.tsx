@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 
 export const metadata = {
   title: "Emoji Only Twitter",
-  description: "Twitter but only with emojies",
+  description: "Twitter but only with emojis",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
