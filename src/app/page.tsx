@@ -9,7 +9,7 @@ dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 
-export const PostView = (props: PostWithUser) => {
+const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   return (
     <div className="flex items-center gap-3  border-b p-3">
@@ -25,7 +25,7 @@ export const PostView = (props: PostWithUser) => {
           <span>@{author.name}</span> •{" "}
           <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
         </div>
-        <span> {post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   );

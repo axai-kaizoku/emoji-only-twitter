@@ -6,7 +6,6 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
-import { LoadingSpinner } from "@/components/loading";
 import { Skeleton } from "@/components/ui/skeletion";
 
 export function CreatePost() {
