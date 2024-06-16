@@ -14,21 +14,17 @@ export function CreatePost() {
 
   const { user } = useUser();
 
-  const createPost = api.post.create.useMutation({
-    onSuccess: () => {
-      router.refresh();
-      setContent("");
-    },
-  });
+  const { mutate } = api.post.create.useMutation();
+
+  // const createPost = api.post.create.useMutation({
+  //   onSuccess: () => {
+  //     router.refresh();
+  //     setContent("");
+  //   },
+  // });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        createPost.mutate({ content });
-      }}
-      className="flex w-full items-center gap-2 border-b px-3 py-4"
-    >
+    <div className="flex w-full items-center gap-2 border-b px-3 py-4">
       {!user ? (
         <div>
           <Skeleton className="h-10 w-10 rounded-full" />
@@ -51,13 +47,7 @@ export function CreatePost() {
         onChange={(e) => setContent(e.target.value)}
         className="w-full px-4 py-2 outline-none"
       />
-      <button
-        type="submit"
-        className="rounded-full bg-slate-400/30 p-2"
-        disabled={createPost.isPending}
-      >
-        {createPost.isPending ? "🔃" : "💸"}
-      </button>
-    </form>
+      <button onClick={() => mutate({ content })}>💸</button>
+    </div>
   );
 }
