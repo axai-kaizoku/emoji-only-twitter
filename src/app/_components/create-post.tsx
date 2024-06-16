@@ -1,20 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { api } from "@/trpc/react";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 export function CreatePost() {
   const router = useRouter();
   const [content, setContent] = useState<string>("");
 
-  const user = useUser();
+  const { user } = useUser();
 
-  useEffect(() => {
-    console.log(user.user);
-  }, [user]);
+  // if (!isSignedIn) throw new Error("User is not logged in");
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
@@ -29,8 +28,15 @@ export function CreatePost() {
         e.preventDefault();
         createPost.mutate({ content });
       }}
-      className="flex w-full gap-2 border-b"
+      className="flex w-full items-center gap-2 border-b px-3 py-4"
     >
+      <Image
+        src={user?.imageUrl ? user?.imageUrl : "/user.svg"}
+        alt="Avatar"
+        className="h-10 w-10 rounded-full"
+        width={40}
+        height={40}
+      />
       <input
         type="text"
         placeholder="Content"
@@ -40,7 +46,7 @@ export function CreatePost() {
       />
       <button
         type="submit"
-        className="h-16 w-16 rounded-full "
+        className="rounded-full bg-slate-400/30 p-2"
         disabled={createPost.isPending}
       >
         {createPost.isPending ? "🔃" : "💸"}

@@ -1,20 +1,28 @@
 import { CreatePost } from "@/app/_components/create-post";
 import type { RouterOutputs } from "@/trpc/react";
 import { api } from "@/trpc/server";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import Image from "next/image";
+
+dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   return (
     <div className="flex items-center gap-3  border-b p-3">
-      <img
-        className="h-14 w-14 rounded-full"
+      <Image
+        className="h-10 w-10 rounded-full"
         src={author.profilePicture ?? ""}
         alt="Profile Picture"
+        width={40}
+        height={40}
       />
       <div className="flex flex-col ">
-        <div className="text-sm text-slate-300">
-          @{author.username ? author.username : "axai"}
+        <div className="flex gap-2 text-xs text-slate-300/50">
+          <span>@{author.username ? author.username : "axai"}</span> •{" "}
+          <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
         </div>
         <span> {post.content}</span>
       </div>
