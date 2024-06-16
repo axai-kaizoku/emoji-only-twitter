@@ -25,7 +25,7 @@ export const posts = createTable(
   {
     id: serial("id").primaryKey(),
     content: varchar("content", { length: 256 }),
-    authorId: varchar("author_id"),
+    authorId: varchar("author_id").default("user_2hvKCYaX6lWqR6l8M2oMfQCy1ym"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

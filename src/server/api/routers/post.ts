@@ -11,6 +11,7 @@ const filterUserForClient = (user: User) => {
     id: user.id,
     username: user.username,
     profilePicture: user.imageUrl,
+    name: user.fullName,
   };
 };
 
