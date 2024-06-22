@@ -28,10 +28,11 @@ import { auth } from "@clerk/nextjs/server";
  * @see https://trpc.io/docs/server/context
  */
 
-export const createTRPCContext = async () => {
+export const createTRPCContext = async (opts: { headers: Headers }) => {
   const { userId } = auth();
   return {
     db,
+    ...opts,
     userId,
   };
 };
