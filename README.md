@@ -7,5 +7,6 @@
 - [x] Create auth using cleark
 - [x] Shadify (w/shadcn), theme
 - [x] Header component
-- [ ] Setup db (postgresql)
-- [ ] Setup orm (drizzle)
+- [x] Setup db (postgresql)
+- [x] Setup orm (drizzle)
+- [x] Posting working

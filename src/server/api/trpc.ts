@@ -11,8 +11,9 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/server";
+// import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+// import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -26,25 +27,9 @@ import { getAuth } from "@clerk/nextjs/server";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-  return {
-    db,
-    ...opts,
-  };
-};
 
-export const createAuthContext = async (opts: CreateNextContextOptions) => {
-  const { req } = opts;
-
-  const sesh = getAuth(req);
-
-  const userId = sesh.userId;
-  if (!userId) {
-    console.log("No user session found");
-  } else {
-    console.log("User session found", userId);
-  }
-
+export const createTRPCContext = async () => {
+  const { userId } = auth();
   return {
     db,
     userId,
@@ -72,27 +57,12 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-const t1 = initTRPC.context<typeof createAuthContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
-});
-
 /**
  * Create a server-side caller.
  *
  * @see https://trpc.io/docs/server/server-side-calls
  */
 export const createCallerFactory = t.createCallerFactory;
-export const createAuthCallerFactory = t1.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -107,7 +77,6 @@ export const createAuthCallerFactory = t1.createCallerFactory;
  * @see https://trpc.io/docs/router
  */
 export const createTRPCRouter = t.router;
-export const createAuthRouter = t1.router;
 
 /**
  * Public (unauthenticated) procedure
@@ -118,7 +87,7 @@ export const createAuthRouter = t1.router;
  */
 export const publicProcedure = t.procedure;
 
-const enforceUserIsAuthed = t1.middleware(async ({ ctx, next }) => {
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   if (!ctx.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -132,4 +101,4 @@ const enforceUserIsAuthed = t1.middleware(async ({ ctx, next }) => {
   });
 });
 
-export const privateProcedure = t1.procedure.use(enforceUserIsAuthed);
+export const privateProcedure = t.procedure.use(enforceUserIsAuthed);

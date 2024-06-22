@@ -9,6 +9,7 @@ import { posts } from "@/server/db/schema";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { User } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
+import { desc } from "drizzle-orm";
 
 const filterUserForClient = (user: User) => {
   return {
@@ -35,18 +36,19 @@ export const postRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.db.query.posts.findMany({
+    const dbPosts = await ctx.db.query.posts.findMany({
       limit: 100,
+      orderBy: [desc(posts.createdAt)],
     });
 
     const users = (
       await clerkClient.users.getUserList({
-        userId: posts.map((post) => post.authorId!),
+        userId: dbPosts.map((post) => post.authorId!),
         limit: 100,
       })
     ).data.map(filterUserForClient);
 
-    return posts.map((post) => {
+    return dbPosts.map((post) => {
       const author = users.find((user) => user.id === post.authorId);
 
       if (!author)
