@@ -15,6 +15,8 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: {
@@ -28,6 +30,7 @@ export default function RootLayout({
             <TRPCReactProvider>
               <Header />
               {children}
+              <Toaster />
             </TRPCReactProvider>
           </ThemeProvider>
         </body>
