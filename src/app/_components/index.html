@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .header {
+        position: fixed; /* Change this from absolute to fixed */
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: white; /* Optional: Add a background color to prevent content from being seen through */
+        z-index: 1000; /* Optional: Ensure the header is on top of other content */
+      }
+
+      .header .text {
+        padding: 1rem 4rem 0.5rem 4rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.2rem;
+      }
+      .wave {
+        background-repeat: repeat-x;
+        content: "";
+        height: 40px;
+        width: 100%;
+        left: 0;
+        background-size: contain;
+        position: static;
+        opacity: 1;
+        transition: opacity 500ms;
+        transform: translateY(0px);
+        background-image: url("./wave.svg");
+      }
+      main {
+        margin-top: 10rem; /* Ensure there's enough space for the fixed header */
+        padding: 0 4rem;
+        min-height: 200vh;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="text">
+        <div>Heyy</div>
+        <div>Login</div>
+      </div>
+      <div class="wave"></div>
+    </header>
+    <main>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque culpa
+      voluptas adipisci. Incidunt, voluptates veritatis ullam distinctio
+      consectetur omnis aliquid sit ipsam, pariatur similique eligendi
+      laudantium placeat perspiciatis vitae laborum.
+    </main>
+  </body>
+</html>
