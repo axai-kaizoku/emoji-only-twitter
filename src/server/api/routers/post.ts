@@ -13,6 +13,7 @@ import { desc } from "drizzle-orm";
 
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis"; // see below for cloudflare and fastly adapters
+import { filterUserForClient } from "@/server/helpers";
 
 // Create a new ratelimiter, that allows 3 requests per 3 minutes
 const ratelimit = new Ratelimit({
@@ -21,24 +22,7 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
-const filterUserForClient = (user: User) => {
-  return {
-    id: user.id,
-    username: user.username,
-    profilePicture: user.imageUrl,
-    name: user.fullName,
-  };
-};
-
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Content: ${input.text}`,
-      };
-    }),
-
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
