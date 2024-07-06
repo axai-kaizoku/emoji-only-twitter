@@ -29,7 +29,11 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <TRPCReactProvider>
               <Header />
-              {children}
+              <main className="flex h-screen flex-col items-center justify-center">
+                <div className="h-full w-11/12 border-x md:w-3/4 ">
+                  {children}
+                </div>
+              </main>
               <Toaster />
             </TRPCReactProvider>
           </ThemeProvider>

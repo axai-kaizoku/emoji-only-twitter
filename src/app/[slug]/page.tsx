@@ -5,14 +5,18 @@ export default async function ProfilePage({
 }: {
   params: { slug: string };
 }) {
+  const userName = params.slug.split("%40")[1]!;
+
   const data = await api.profile.getUserByUsername({
-    username: "02b3akshay",
+    username: userName,
   });
-  console.log(data[0]);
+
+  console.log(data);
+
   return (
     <div>
       {/* {params.slug} */}
-      {data[0]?.username}
+      {data?.username}
     </div>
   );
 }

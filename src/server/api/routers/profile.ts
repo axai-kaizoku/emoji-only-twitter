@@ -21,7 +21,7 @@ export const profileRouter = createTRPCRouter({
           message: "User not found",
         });
       }
-      console.log(user);
-      return user;
+
+      return user[0];
     }),
 });

@@ -7,7 +7,6 @@ import {
 } from "@/server/api/trpc";
 import { posts } from "@/server/db/schema";
 import { clerkClient } from "@clerk/nextjs/server";
-import type { User } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { desc } from "drizzle-orm";
 

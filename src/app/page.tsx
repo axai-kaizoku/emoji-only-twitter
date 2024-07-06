@@ -5,10 +5,19 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import Link from "next/link";
-
+type PostWithUser = RouterOutputs["post"]["getAll"][number];
 dayjs.extend(relativeTime);
 
-type PostWithUser = RouterOutputs["post"]["getAll"][number];
+export default async function Home() {
+  // fetch posts asap
+  await api.post.getLatest();
+  return (
+    <>
+      <CreatePost />
+      <Feed />
+    </>
+  );
+}
 
 const PostView = (props: PostWithUser) => {
   const { post, author } = props;
@@ -31,7 +40,9 @@ const PostView = (props: PostWithUser) => {
             <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
           </Link>
         </div>
-        <span className="text-2xl">{post.content}</span>
+        <Link href={`/post/${post.id}`}>
+          <span className="text-2xl">{post.content}</span>
+        </Link>
       </div>
     </div>
   );
@@ -50,17 +61,3 @@ const Feed = async () => {
     </div>
   );
 };
-
-export default async function Home() {
-  // fetch posts asap
-  await api.post.getLatest();
-
-  return (
-    <main className="flex h-screen flex-col items-center justify-center">
-      <div className="h-full w-11/12 border-x md:w-3/4 ">
-        <CreatePost />
-        <Feed />
-      </div>
-    </main>
-  );
-}
