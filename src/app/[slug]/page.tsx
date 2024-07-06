@@ -1,5 +1,22 @@
 import { api } from "@/trpc/server";
 import Image from "next/image";
+import PostView from "../_components/post-view";
+
+const ProfileFeed = async (props: { userId: string }) => {
+  const AllPosts = await api.post.getPostsByUserId({
+    userId: props.userId,
+  });
+
+  if (!AllPosts || AllPosts.length === 0) return <div>No Posts Found</div>;
+
+  return (
+    <div className="flex w-full flex-col border-b">
+      {AllPosts.map((post) => (
+        <PostView author={post.author} post={post.post} key={post.author.id} />
+      ))}
+    </div>
+  );
+};
 
 export default async function ProfilePage({
   params,
@@ -31,6 +48,7 @@ export default async function ProfilePage({
         </span>
       </div>
       <div className="w-full border-b border-slate-400" />
+      <ProfileFeed userId={data?.id ?? ""} />
     </>
   );
 }
