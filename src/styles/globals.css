@@ -74,3 +74,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.cl-avatarBox {
+  width: 3rem;
+  height: 3rem;
+}
+
+#sign-in-button button {
+  text-wrap: nowrap;
+  size: 0.5rem;
+}

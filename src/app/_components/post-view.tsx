@@ -10,13 +10,13 @@ type PostWithUser = RouterOutputs["post"]["getAll"][number];
 export default function PostView(props: PostWithUser) {
   const { post, author } = props;
   return (
-    <div className="flex items-center gap-3  border-b p-3">
+    <div className="flex items-center gap-3  border-b-4 p-3">
       <Image
-        className="h-10 w-10 rounded-full"
+        className=" rounded-full"
         src={author.profilePicture ?? "/user.svg"}
         alt="Profile Picture"
-        width={40}
-        height={40}
+        width={48}
+        height={48}
       />
       <div className="flex flex-col ">
         <div className="flex gap-2 text-xs text-slate-300/50">

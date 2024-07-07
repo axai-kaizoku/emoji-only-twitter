@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
 import { api } from "@/trpc/react";
-import { useUser } from "@clerk/nextjs";
-import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeletion";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/loading";
@@ -14,7 +17,7 @@ export function CreatePost() {
   const router = useRouter();
   const [content, setContent] = useState("");
 
-  const { user, isLoaded } = useUser();
+  const { isLoaded } = useUser();
 
   const { mutate, isPending: isPosting } = api.post.create.useMutation({
     onSuccess: () => {
@@ -45,20 +48,22 @@ export function CreatePost() {
   });
 
   return (
-    <div className="flex w-full items-center gap-3 border-b px-3 py-4">
+    <div
+      id="sign-in-button"
+      className="flex w-full items-center gap-3 border-b-4 px-3 py-4"
+    >
       {!isLoaded ? (
         <div>
-          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="h-12 w-12 rounded-full bg-black" />
         </div>
       ) : (
         <>
-          <Image
-            src={user?.imageUrl ? user?.imageUrl : "/user.svg"}
-            alt="Avatar"
-            className="rounded-full"
-            width={40}
-            height={40}
-          />
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </>
       )}
 

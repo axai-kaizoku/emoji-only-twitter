@@ -13,22 +13,15 @@ import { desc, eq } from "drizzle-orm";
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis"; // see below for cloudflare and fastly adapters
 import { filterUserForClient } from "@/server/helpers";
-
-type Post = {
-  id: number;
-  authorId: string | null;
-  content: string | null;
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+import type { Post } from "@/types";
 
 const addUserDataToPosts = async (dbPosts: Post[]) => {
-  const users = (
-    await clerkClient.users.getUserList({
-      userId: dbPosts.map((post) => post.authorId!),
-      limit: 100,
-    })
-  ).data.map(filterUserForClient);
+  const data = await clerkClient.users.getUserList({
+    userId: dbPosts.map((post) => post.authorId!),
+    limit: 100,
+  });
+
+  const users = data.data.map(filterUserForClient);
 
   return dbPosts.map((post) => {
     const author = users.find((user) => user.id === post.authorId);
@@ -54,6 +47,21 @@ const ratelimit = new Ratelimit({
 });
 
 export const postRouter = createTRPCRouter({
+  getById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.query.posts.findFirst({
+        where: eq(posts.id, input.id),
+      });
+
+      if (!post)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+
+      return (await addUserDataToPosts([post]))[0];
+    }),
+
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
@@ -62,15 +70,17 @@ export const postRouter = createTRPCRouter({
 
   getPostsByUserId: publicProcedure
     .input(z.object({ userId: z.string() }))
-    .query(({ ctx, input }) =>
-      ctx.db.query.posts
-        .findMany({
-          where: eq(posts.authorId, input.userId),
-          limit: 100,
-          orderBy: [desc(posts.createdAt)],
-        })
-        .then(addUserDataToPosts),
-    ),
+    .query(async ({ ctx, input }) => {
+      const userPosts = await ctx.db.query.posts.findMany({
+        where: eq(posts.authorId, input.userId),
+        limit: 100,
+        orderBy: [desc(posts.createdAt)],
+      });
+
+      if (!userPosts) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return await addUserDataToPosts(userPosts);
+    }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
     const dbPosts = await ctx.db.query.posts.findMany({
@@ -78,7 +88,7 @@ export const postRouter = createTRPCRouter({
       orderBy: [desc(posts.createdAt)],
     });
 
-    return addUserDataToPosts(dbPosts);
+    return await addUserDataToPosts(dbPosts);
   }),
 
   create: privateProcedure
