@@ -30,8 +30,8 @@ jobs:
         run: npm install
 
       - name: Run TypeScript type checking
-        run: npm run type-check
-        # Assuming you have a script "type-check" in your package.json that runs the TypeScript checker
+        run: npm run typecheck
+        # Assuming you have a script "typecheck" in your package.json that runs the TypeScript checker
 
       - name: Run linter
         run: npm run lint
