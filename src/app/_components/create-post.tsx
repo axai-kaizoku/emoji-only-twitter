@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { api } from "@/trpc/react";
 import {
   SignedIn,
@@ -11,15 +10,29 @@ import {
 } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { LoadingSpinner } from "@/components/loading";
+import { useForm, FormProvider } from "react-hook-form";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useTransition } from "react";
+
+const ContentSchema = z.object({
+  content: z.string().emoji(),
+});
+
+export type ContentType = z.infer<typeof ContentSchema>;
 
 export function CreatePost() {
   const router = useRouter();
-  const [content, setContent] = useState("");
+  const form = useForm<ContentType>({
+    resolver: zodResolver(ContentSchema),
+    mode: "onChange",
+  });
 
-  const { isLoaded } = useUser();
+  const [pending, startTransition] = useTransition();
 
-  const { mutate, isPending: isPosting } = api.post.create.useMutation({
+  const { mutate } = api.post.create.useMutation({
     onSuccess: () => {
       toast(
         <div className="flex w-full justify-between text-lg font-semibold">
@@ -27,7 +40,7 @@ export function CreatePost() {
         </div>,
       );
       router.refresh();
-      setContent("");
+      form.reset();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -47,10 +60,18 @@ export function CreatePost() {
     },
   });
 
+  const onSubmit = async (content: ContentType) => {
+    startTransition(() => {
+      mutate(content);
+    });
+  };
+
+  const { isLoaded } = useUser();
+
   return (
     <div
+      className="flex w-full items-center justify-normal gap-3 border-b-4 px-3 py-4"
       id="sign-in-button"
-      className="flex w-full items-center gap-3 border-b-4 px-3 py-4"
     >
       {!isLoaded ? (
         <div>
@@ -66,32 +87,39 @@ export function CreatePost() {
           </SignedIn>
         </>
       )}
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit(async (data) => {
+            await onSubmit(data);
+          })}
+          className="flex w-full items-center justify-between gap-2"
+        >
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <Input
+                    placeholder="Enter emojis only ✨"
+                    autoFocus
+                    className={
+                      form.formState.errors.content?.message
+                        ? "focus-visible:ring-red-500"
+                        : ""
+                    }
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-      <input
-        type="text"
-        placeholder="Enter emojis only ✨"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="w-full rounded px-4 py-2 outline-none"
-        disabled={isPosting}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            if (content !== "") {
-              mutate({ content });
-            }
-          }
-        }}
-      />
-      {content !== "" && !isPosting && (
-        <button onClick={() => mutate({ content })}>💸</button>
-      )}
-
-      {isPosting && (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size={22} />
-        </div>
-      )}
+          <button type="submit" disabled={pending}>
+            💸
+          </button>
+        </form>
+      </FormProvider>
     </div>
   );
 }
