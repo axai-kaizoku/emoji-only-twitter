@@ -4,14 +4,20 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ProfileCard } from "./profile-card";
+import { cn } from "@/lib/utils";
 dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 
-export default function PostView(props: PostWithUser) {
+type PostViewProps = {
+  props: PostWithUser;
+  className?: string;
+};
+
+export default function PostView({ props, className }: PostViewProps) {
   const { post, author } = props;
   return (
-    <div className="flex items-center gap-3  border-b-4 p-3">
+    <div className={cn("flex items-center gap-3  border-b-4 p-3", className)}>
       <Image
         className=" rounded-full"
         src={author.profilePicture ?? "/user.svg"}

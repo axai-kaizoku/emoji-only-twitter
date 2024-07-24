@@ -1,13 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -20,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTransition } from "react";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeletion";
 
 const ContentSchema = z.object({
   content: z.string().emoji(),
@@ -79,57 +75,56 @@ export function CreatePost() {
     );
   };
 
-  const { isLoaded } = useUser();
+  const { user, isLoaded } = useUser();
 
   return (
-    <div
-      className="fixed top-0 z-50 flex w-[calc(75%-0.5rem)] items-center justify-normal gap-3 border-b-4 bg-muted/30 px-3 py-4 backdrop-blur md:w-[calc(60%-0.5rem)]"
-      id="sign-in-button"
-    >
+    <div className=" flex w-full items-center justify-normal gap-3 border-b-4 px-3 py-4">
       {!isLoaded ? (
-        <div>
-          <div className="h-12 w-12 rounded-full bg-black" />
-        </div>
-      ) : (
+        <Skeleton className="h-12 w-full" />
+      ) : user ? (
         <>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </>
-      )}
-      <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit, onError)}
-          className="flex w-full items-center justify-between gap-2"
-        >
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input
-                    placeholder="Enter emojis only ✨"
-                    autoFocus
-                    className={
-                      form.formState.errors.content?.message
-                        ? "focus-visible:ring-red-500"
-                        : ""
-                    }
-                    {...field}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <Image
+            width={48}
+            height={48}
+            src={user?.imageUrl ?? "/user.svg"}
+            alt="user-img"
+            className="rounded-full object-contain"
           />
-          <button type="submit" disabled={pending}>
-            💸
-          </button>
-        </form>
-      </FormProvider>
+
+          <FormProvider {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="flex w-full items-center justify-between gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        placeholder="Enter emojis only ✨"
+                        autoFocus
+                        className={
+                          form.formState.errors.content?.message
+                            ? "focus-visible:ring-red-500"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <button type="submit" disabled={pending}>
+                💸
+              </button>
+            </form>
+          </FormProvider>
+        </>
+      ) : (
+        <span>Login to post emojis ❤️ !!</span>
+      )}
     </div>
   );
 }
