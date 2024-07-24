@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTransition } from "react";
 import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeletion";
 
 const ContentSchema = z.object({
   content: z.string().emoji(),
@@ -75,15 +76,12 @@ export function CreatePost() {
   };
 
   const { user, isLoaded } = useUser();
-  // const user = useUser();
 
   return (
     <div className=" flex w-full items-center justify-normal gap-3 border-b-4 px-3 py-4">
       {!isLoaded ? (
-        <div>
-          <div className="h-12 w-12 rounded-full bg-black" />
-        </div>
-      ) : (
+        <Skeleton className="h-12 w-full" />
+      ) : user ? (
         <>
           <Image
             width={48}
@@ -92,44 +90,41 @@ export function CreatePost() {
             alt="user-img"
             className="rounded-full object-contain"
           />
-          {/* <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn> */}
+
+          <FormProvider {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="flex w-full items-center justify-between gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        placeholder="Enter emojis only ✨"
+                        autoFocus
+                        className={
+                          form.formState.errors.content?.message
+                            ? "focus-visible:ring-red-500"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <button type="submit" disabled={pending}>
+                💸
+              </button>
+            </form>
+          </FormProvider>
         </>
+      ) : (
+        <span>Login to post emojis ❤️ !!</span>
       )}
-      <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit, onError)}
-          className="flex w-full items-center justify-between gap-2"
-        >
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input
-                    placeholder="Enter emojis only ✨"
-                    autoFocus
-                    className={
-                      form.formState.errors.content?.message
-                        ? "focus-visible:ring-red-500"
-                        : ""
-                    }
-                    {...field}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <button type="submit" disabled={pending}>
-            💸
-          </button>
-        </form>
-      </FormProvider>
     </div>
   );
 }
