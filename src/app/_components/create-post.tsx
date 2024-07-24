@@ -1,13 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -20,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTransition } from "react";
+import Image from "next/image";
 
 const ContentSchema = z.object({
   content: z.string().emoji(),
@@ -79,25 +74,30 @@ export function CreatePost() {
     );
   };
 
-  const { isLoaded } = useUser();
+  const { user, isLoaded } = useUser();
+  // const user = useUser();
 
   return (
-    <div
-      className="fixed top-0 z-50 flex w-[calc(75%-0.5rem)] items-center justify-normal gap-3 border-b-4 bg-muted/30 px-3 py-4 backdrop-blur md:w-[calc(60%-0.5rem)]"
-      id="sign-in-button"
-    >
+    <div className=" flex w-full items-center justify-normal gap-3 border-b-4 px-3 py-4">
       {!isLoaded ? (
         <div>
           <div className="h-12 w-12 rounded-full bg-black" />
         </div>
       ) : (
         <>
-          <SignedOut>
+          <Image
+            width={48}
+            height={48}
+            src={user?.imageUrl ?? "/user.svg"}
+            alt="user-img"
+            className="rounded-full object-contain"
+          />
+          {/* <SignedOut>
             <SignInButton />
           </SignedOut>
           <SignedIn>
             <UserButton />
-          </SignedIn>
+          </SignedIn> */}
         </>
       )}
       <FormProvider {...form}>

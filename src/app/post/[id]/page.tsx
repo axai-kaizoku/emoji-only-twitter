@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PostView from "@/app/_components/post-view";
 import { api } from "@/trpc/server";
 import { cache } from "react";
+import { TopNavIndicator } from "@/app/layout";
 
 type Props = {
   params: { id: string };
@@ -26,5 +27,11 @@ export default async function PostPage({ params: { id } }: Props) {
 
   if (!post) return <div>Something went wrong! Please try again later</div>;
 
-  return <PostView post={post.post} author={post.author} />;
+  return (
+    <div>
+      <TopNavIndicator isBorder={false} />
+
+      <PostView props={post} className="pt-12" />
+    </div>
+  );
 }
