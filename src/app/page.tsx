@@ -17,7 +17,7 @@ const Feed = async () => {
   const AllPosts = await api.post.getAll();
   if (!AllPosts) return <div>No Posts Found</div>;
   return (
-    <div className="flex w-full flex-col border-b">
+    <div className="flex w-full flex-col border-b pt-20">
       {AllPosts.map((fullPost) => (
         <PostView key={fullPost.post.id} {...fullPost} />
       ))}

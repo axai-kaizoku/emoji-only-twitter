@@ -26,8 +26,8 @@ export default function RootLayout({
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <TRPCReactProvider>
-              <main className="flex h-screen flex-col items-center justify-center">
-                <div className="h-full w-3/4 overflow-y-scroll border-x-4 md:w-[60%]">
+              <main className="relative flex h-screen flex-col items-center justify-center">
+                <div className="h-full w-3/4 overflow-y-scroll border-x-4  md:w-[60%]">
                   {children}
                 </div>
               </main>

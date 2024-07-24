@@ -39,10 +39,10 @@ const addUserDataToPosts = async (dbPosts: Post[]) => {
   });
 };
 
-// Create a new ratelimiter, that allows 3 requests per 3 minutes
+// Create a new ratelimiter, that allows 3 requests per 5 minutes
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(3, "3 m"),
+  limiter: Ratelimit.slidingWindow(3, "5 m"),
   analytics: true,
 });
 

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { ProfileCard } from "./profile-card";
 dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
@@ -19,10 +20,14 @@ export default function PostView(props: PostWithUser) {
         height={48}
       />
       <div className="flex flex-col ">
-        <div className="flex gap-2 text-xs text-slate-300/50">
-          <Link href={`/@${author.username}`}>
-            <span>@{author.username}</span>
-          </Link>
+        <div className="flex gap-2 text-xs text-slate-700 dark:text-slate-300/50">
+          <ProfileCard
+            trigger={<span className="cursor-pointer">@{author.username}</span>}
+            img={author.profilePicture}
+            name={author.name!}
+            username={author.username!}
+            href={`/@${author.username!}`}
+          />
           •
           <Link href={`/post/${post.id}`}>
             <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>

@@ -10,7 +10,11 @@ import {
 } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useForm, FormProvider } from "react-hook-form";
+import {
+  useForm,
+  FormProvider,
+  type SubmitErrorHandler,
+} from "react-hook-form";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,8 +43,9 @@ export function CreatePost() {
           <div>Post Created Successfully!</div> ✅
         </div>,
       );
-      router.refresh();
+      form.reset({ content: "" });
       form.reset();
+      router.refresh();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -66,11 +71,19 @@ export function CreatePost() {
     });
   };
 
+  const onError: SubmitErrorHandler<ContentType> = async (error) => {
+    toast(
+      <div className="flex w-full justify-between text-lg font-semibold">
+        <div>{error.content?.message}</div> ❌
+      </div>,
+    );
+  };
+
   const { isLoaded } = useUser();
 
   return (
     <div
-      className="flex w-full items-center justify-normal gap-3 border-b-4 px-3 py-4"
+      className="fixed top-0 z-50 flex w-[calc(75%-0.5rem)] items-center justify-normal gap-3 border-b-4 bg-muted/30 px-3 py-4 backdrop-blur md:w-[calc(60%-0.5rem)]"
       id="sign-in-button"
     >
       {!isLoaded ? (
@@ -89,9 +102,7 @@ export function CreatePost() {
       )}
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(async (data) => {
-            await onSubmit(data);
-          })}
+          onSubmit={form.handleSubmit(onSubmit, onError)}
           className="flex w-full items-center justify-between gap-2"
         >
           <FormField
@@ -114,7 +125,6 @@ export function CreatePost() {
               </FormItem>
             )}
           />
-
           <button type="submit" disabled={pending}>
             💸
           </button>
